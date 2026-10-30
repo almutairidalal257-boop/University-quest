@@ -1,4 +1,5 @@
 // Procedural music and sound effects with the Web Audio API (no audio files needed, works offline).
+import { voiceKeyFor, ttsHash, speakableText } from './voices';
 
 let ctx: AudioContext | null = null;
 let musicGain: GainNode | null = null;
@@ -148,12 +149,49 @@ export function sfx(name: Sfx) {
   }
 }
 
-export function speak(text: string) {
+// ------------------------------------------------------------------ voices
+// Pre-generated ElevenLabs MP3s live in public/tts (see scripts/generate-voices.ts).
+// Lines without a file (e.g. ones containing the player's name) use the device's voice.
+let ttsFiles: Set<string> | null = null;
+let voiceAudio: HTMLAudioElement | null = null;
+
+export function loadVoices() {
+  fetch('./tts/manifest.json')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((m) => { if (m?.files) ttsFiles = new Set(m.files); })
+    .catch(() => { /* no recorded voices: device voice is used */ });
+}
+
+export function hasRecordedVoices() {
+  return !!ttsFiles?.size;
+}
+
+export function stopSpeaking() {
+  voiceAudio?.pause();
+  voiceAudio = null;
+  try { window.speechSynthesis?.cancel(); } catch { /* ignore */ }
+}
+
+/** Reads text aloud in the voice of the character whose look id is given. */
+export function speak(text: string, look?: string) {
+  stopSpeaking();
+  const voice = voiceKeyFor(look);
+  const file = ttsHash(voice, text);
+  if (ttsFiles?.has(file)) {
+    const a = new Audio(`./tts/${file}.mp3`);
+    a.volume = Math.min(1, 0.4 + vol.sfx * 0.6);
+    voiceAudio = a;
+    a.play().catch(() => deviceSpeak(text));
+    return;
+  }
+  deviceSpeak(text);
+}
+
+function deviceSpeak(text: string) {
   try {
     const synth = window.speechSynthesis;
     if (!synth) return;
-    synth.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(speakableText(text));
     u.lang = 'en-GB';
     u.rate = 0.85;
     synth.speak(u);

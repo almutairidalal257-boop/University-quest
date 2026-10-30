@@ -1,0 +1,35 @@
+name: Generate voices (ElevenLabs)
+
+# Run from the Actions tab after adding the ELEVENLABS_API_KEY secret,
+# and again whenever you edit the dialogue. Only new or changed lines use credits.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: voices
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Generate voice files
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: node --experimental-strip-types scripts/generate-voices.ts
+      - name: Commit voice files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/tts
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Update ElevenLabs voice files"
+          git push

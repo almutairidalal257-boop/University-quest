@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # pushes made by the voices workflow don't trigger "push", so redeploy after it
+  workflow_run:
+    workflows: ["Generate voices (ElevenLabs)"]
+    types: [completed]
 
 permissions:
   contents: read

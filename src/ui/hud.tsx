@@ -5,7 +5,7 @@ import { objective, closeReward } from '../game/logic';
 import { vocabById } from '../game/content';
 import { ROOM_NAMES } from '../phaser/maps';
 import { Portrait, VocabIcon } from './common';
-import { sfx, speak } from '../game/audio';
+import { sfx, speak, stopSpeaking } from '../game/audio';
 
 export function HUD() {
   const g = useStore(game);
@@ -72,6 +72,11 @@ export function Dialogue() {
   const [chars, setChars] = useState(0);
   const line = d ? d.lines[d.index] : null;
   useEffect(() => { setChars(0); }, [d?.index, d?.lines]);
+  // read each new line aloud when "Read dialogue aloud" is on
+  useEffect(() => {
+    if (line && settings.get().autoVoice) speak(line.text, line.look);
+  }, [d?.index, d?.lines]);
+  useEffect(() => () => stopSpeaking(), [!!d]);
   useEffect(() => {
     if (!line) return;
     if (chars >= line.text.length) return;
@@ -104,7 +109,7 @@ export function Dialogue() {
           {line.choices && chars >= line.text.length && (
             <div className="dl-choices">{line.choices.map((c, i) => <button key={i} className="btn" onClick={(e) => { e.stopPropagation(); ui.set({ dialogue: null }); c.action?.(); }}>{c.text}</button>)}</div>
           )}
-          <div className="dl-next">{chars >= line.text.length && !line.choices ? '▼ Click / E / Space' : ''} <button className="btn tiny" onClick={(e) => { e.stopPropagation(); speak(line.text); }} title="Read aloud">🔊</button></div>
+          <div className="dl-next">{chars >= line.text.length && !line.choices ? '▼ Click / E / Space' : ''} <button className="btn tiny" onClick={(e) => { e.stopPropagation(); speak(line.text, line.look); }} title="Read aloud">🔊</button></div>
         </div>
       </div>
     </div>
@@ -163,7 +168,7 @@ export function VocabCardModal() {
             <p className="example">“{v.example}”</p>
             {(st.arabic || showAr) ? <p className="arabic" lang="ar">{v.arabic}</p> : <button className="btn tiny" onClick={() => setShowAr(true)}>عربي – Show Arabic hint</button>}
             <div className="row center">
-              <button className="btn" onClick={() => speak(`${v.word}. ${v.example}`)}>🔊 Listen</button>
+              <button className="btn" onClick={() => speak(`${v.word}. ${v.example}`, 'librarian')}>🔊 Listen</button>
               <button className="btn primary" onClick={() => { ui.set({ vocabCard: null }); sfx('select'); if (n >= 7 && !game.get().flags.m2_match) toast('All 7 words found! Return to Mrs Amal.', 'info', '📚'); }}>Got it! ✔</button>
             </div>
           </div>

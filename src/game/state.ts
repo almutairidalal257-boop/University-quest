@@ -120,8 +120,8 @@ game.subscribe(() => {
 });
 
 // ---------------------------------------------------------------- settings
-export interface Settings { musicOn: boolean; sfxOn: boolean; music: number; sfx: number; arabic: boolean; showTouch: boolean }
-export const settings = createStore<Settings>({ musicOn: true, sfxOn: true, music: 0.5, sfx: 0.7, arabic: false, showTouch: false, ...(safeGet(SETTINGS_KEY) || {}) });
+export interface Settings { musicOn: boolean; sfxOn: boolean; music: number; sfx: number; arabic: boolean; showTouch: boolean; autoVoice: boolean }
+export const settings = createStore<Settings>({ musicOn: true, sfxOn: true, music: 0.5, sfx: 0.7, arabic: false, showTouch: false, autoVoice: false, ...(safeGet(SETTINGS_KEY) || {}) });
 settings.subscribe(() => safeSet(SETTINGS_KEY, settings.get()));
 
 // ---------------------------------------------------------------- UI state (not saved)

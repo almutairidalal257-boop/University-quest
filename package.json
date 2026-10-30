@@ -7,7 +7,9 @@
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "voices": "node --experimental-strip-types scripts/generate-voices.ts",
+    "voices:check": "node --experimental-strip-types scripts/generate-voices.ts --dry-run"
   },
   "dependencies": {
     "@fontsource/nunito": "^5.1.0",

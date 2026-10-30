@@ -28,6 +28,19 @@ npm run preview
 
 The `dist/` folder is fully static and uses relative paths. Once it is built, the game needs no internet connection. The fonts are bundled.
 
+## Character voices (ElevenLabs)
+
+Each character can speak with a natural ElevenLabs voice: dialogue (🔊 button, or **Settings → Read dialogue aloud automatically**) and the word cards (🔊 Listen). The voices are made **once** and saved as MP3 files in `public/tts/`. The game never contains your API key and never calls ElevenLabs while students play, so there is no cost per student and the voices work offline.
+
+1. In ElevenLabs, open your profile → **API Keys** and create a key that has **Text to Speech** access.
+2. On GitHub, go to **Settings → Secrets and variables → Actions → New repository secret**. Name it `ELEVENLABS_API_KEY` and paste the key.
+3. Open the **Actions** tab → **Generate voices (ElevenLabs)** → **Run workflow**. It creates about 130 lines (around 10,000 characters) and saves them to the repository. The site then redeploys automatically.
+4. After you edit dialogue, run the workflow again. Only new or changed lines use credits, and files for deleted lines are removed.
+
+To change a voice, edit `scripts/voices.json` (copy a voice ID from your ElevenLabs Voice Library) and run the workflow again. Which character uses which voice is set in `src/game/voices.ts`. To see the lines and the character count without using any credits, run `npm run voices:check`.
+
+Lines that include the player's name, and other text built while the game runs, use the device's built-in voice. So does everything if no voice files have been generated.
+
 ## Play on iPhone / iPad
 
 The repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that publishes the game to GitHub Pages every time `main` changes.

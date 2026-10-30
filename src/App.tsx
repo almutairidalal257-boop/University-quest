@@ -4,7 +4,7 @@ import { createGame } from './phaser/WorldScene';
 import { useStore, bus } from './game/store';
 import { game, ui, settings, isBlocking } from './game/state';
 import { initLogic, refreshWorld } from './game/logic';
-import { setVolumes, unlockAudio, sfx } from './game/audio';
+import { setVolumes, unlockAudio, sfx, loadVoices } from './game/audio';
 import { HUD, Dialogue, Toasts, LocationBanner, RewardPopup, VocabCardModal, TouchControls } from './ui/hud';
 import { MainMenu, TeamSetup, CreateCharacter, Intro, HowTo, SettingsPanel } from './ui/menus';
 import { Backpack, Journal, Pause, Leaderboard, TeacherTools, jumpToMission } from './ui/panels';
@@ -32,7 +32,7 @@ export default function App() {
   const phaser = useRef<Phaser.Game | null>(null);
 
   useEffect(() => {
-    if (!logicReady) { initLogic(); logicReady = true; }
+    if (!logicReady) { initLogic(); loadVoices(); logicReady = true; }
     if (host.current && !phaser.current) phaser.current = createGame(host.current);
     (window as any).__uq = { game, ui, bus, jumpToMission, refreshWorld };
   }, []);

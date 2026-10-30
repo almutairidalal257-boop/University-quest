@@ -4,7 +4,7 @@ import { game, ui, settings, defaultState, hasSave, loadSave, setFlag, checkAchi
 import { rooms } from '../phaser/maps';
 import { AVATARS, LOOKS } from '../game/looks';
 import { AvatarImg, Modal, Portrait } from './common';
-import { sfx, unlockAudio, setVolumes } from '../game/audio';
+import { sfx, unlockAudio, setVolumes, hasRecordedVoices } from '../game/audio';
 import { refreshWorld } from '../game/logic';
 import { UNIVERSITY } from '../game/content';
 
@@ -205,6 +205,7 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
         <label className="set-row"><span>🎵 Music</span><input type="checkbox" checked={st.musicOn} onChange={(e) => upd({ musicOn: e.target.checked })} /><input type="range" min={0} max={1} step={0.05} value={st.music} onChange={(e) => upd({ music: Number(e.target.value) })} /></label>
         <label className="set-row"><span>🔔 Sound effects</span><input type="checkbox" checked={st.sfxOn} onChange={(e) => upd({ sfxOn: e.target.checked })} /><input type="range" min={0} max={1} step={0.05} value={st.sfx} onChange={(e) => { upd({ sfx: Number(e.target.value) }); sfx('coin'); }} /></label>
         <label className="set-row"><span>عربي Arabic vocabulary hints</span><input type="checkbox" checked={st.arabic} onChange={(e) => upd({ arabic: e.target.checked })} /></label>
+        <label className="set-row"><span>🗣️ Read dialogue aloud automatically{hasRecordedVoices() ? '' : ' (device voice)'}</span><input type="checkbox" checked={st.autoVoice} onChange={(e) => upd({ autoVoice: e.target.checked })} /></label>
         <label className="set-row"><span>🕹️ Always show on-screen controls</span><input type="checkbox" checked={st.showTouch} onChange={(e) => upd({ showTouch: e.target.checked })} /></label>
         <button className="btn" onClick={toggleFullscreen}>⛶ Toggle full screen</button>
         <p className="muted small">Shortcut: press <kbd>M</kbd> to mute or unmute music.</p>

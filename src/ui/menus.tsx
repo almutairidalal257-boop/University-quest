@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore, bus } from '../game/store';
-import { game, ui, settings, defaultState, hasSave, loadSave, setFlag, checkAchievements, teamColors, clearSave } from '../game/state';
+import { game, ui, settings, defaultState, hasSave, loadSave, setFlag, checkAchievements, teamColors, clearSave, toast } from '../game/state';
 import { rooms } from '../phaser/maps';
 import { AVATARS, LOOKS } from '../game/looks';
 import { AvatarImg, Modal, Portrait } from './common';
@@ -214,9 +214,16 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
 }
 
 export function toggleFullscreen() {
-  const el = document.documentElement;
-  if (!document.fullscreenElement) el.requestFullscreen?.().catch(() => {});
-  else document.exitFullscreen?.();
+  const el = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
+  const doc = document as Document & { webkitFullscreenElement?: Element; webkitExitFullscreen?: () => void };
+  if (doc.fullscreenElement || doc.webkitFullscreenElement) { (doc.exitFullscreen?.() ?? doc.webkitExitFullscreen?.()); return; }
+  if (el.requestFullscreen) el.requestFullscreen().catch(() => iosTip());
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else iosTip();
+}
+
+function iosTip() {
+  toast('On iPhone/iPad: tap Share ⬆️ then "Add to Home Screen" to play in full screen.', 'info', '📱');
 }
 
 export { LOOKS };

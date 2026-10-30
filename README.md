@@ -28,6 +28,17 @@ npm run preview
 
 The `dist/` folder is fully static and uses relative paths. Once it is built, the game needs no internet connection. The fonts are bundled.
 
+## Play on iPhone / iPad
+
+The repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that publishes the game to GitHub Pages every time `main` changes.
+
+1. On GitHub, open the repository's **Settings → Pages**. Under **Build and deployment → Source**, choose **GitHub Actions**.
+2. Open the **Actions** tab and wait for "Deploy to GitHub Pages" to finish. If it ran before Pages was turned on, click **Run workflow**.
+3. On the iPhone or iPad, open `https://<your-username>.github.io/<repository-name>/` in **Safari**.
+4. Tap **Share → Add to Home Screen**. The game then opens full-screen in landscape, like an app.
+
+Notes for iOS: turn the phone sideways (landscape). Sound only starts after the first tap, and the silent switch mutes it. Progress is saved separately on each device.
+
 ## Controls
 
 | Action | Keyboard | Mouse / touch |

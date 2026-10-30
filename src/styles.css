@@ -22,15 +22,20 @@
 }
 
 * { box-sizing: border-box; }
-html, body, #root { margin: 0; height: 100%; background: var(--night); overflow: hidden; touch-action: none; }
-body { font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none; }
+html, body, #root { margin: 0; height: 100%; background: var(--night); overflow: hidden; touch-action: none; overscroll-behavior: none; }
+@supports (height: 100dvh) { .stage { --vh: calc(100dvh - var(--st) - var(--sb)); } }
+body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none; }
 input, textarea, select { user-select: text; -webkit-user-select: text; font-family: var(--font); }
 button { font-family: var(--font); cursor: pointer; color: inherit; }
 
 /* ------------------------------------------------ 16:9 stage */
 .stage {
-  position: fixed; inset: 0; margin: auto;
-  width: min(100vw, 177.78vh); height: min(100vh, 56.25vw);
+  --sl: env(safe-area-inset-left, 0px); --sr: env(safe-area-inset-right, 0px);
+  --st: env(safe-area-inset-top, 0px); --sb: env(safe-area-inset-bottom, 0px);
+  --vw: calc(100vw - var(--sl) - var(--sr));
+  --vh: calc(100vh - var(--st) - var(--sb));
+  position: fixed; inset: var(--st) var(--sr) var(--sb) var(--sl); margin: auto;
+  width: min(var(--vw), var(--vh) * 1.7778); height: min(var(--vh), var(--vw) * 0.5625);
   container-type: size; overflow: hidden; background: var(--night);
   box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
 }
@@ -664,7 +669,13 @@ legend { font-weight: 900; color: var(--lav-d); padding: 0 0.3em; font-size: 0.9
   .print-letter { font-size: 14px; line-height: 1.6; padding: 10mm; }
 }
 
-/* small screens */
-@container (max-width: 760px) {
-  .ui-root { font-size: 11px; }
+/* phones in landscape: use the whole screen (no 16:9 bars) so the UI has more room */
+@media (max-height: 520px) and (orientation: landscape) {
+  .stage { width: var(--vw); height: var(--vh); }
+  .ui-root { font-size: clamp(10px, 2.55cqh, 16px); }
+  .mg-backdrop, .modal-backdrop { padding: 0.4em; }
+  .mg-panel { border-radius: 0.8em; }
+  .dl-portrait .portrait { width: 5em; height: 5em; }
+  .dl-text { font-size: 1.15em; min-height: 2em; }
+  .hud-btn { width: 2.3em; height: 2.3em; }
 }
